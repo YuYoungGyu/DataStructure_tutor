@@ -35,8 +35,8 @@ int main(){
     bfs.push({0,0,'0'}); // input starting point and depth
     check[0][0] = true;    // masking(지나온 곳을 표시) -> 다시 방문하지 않기 위해
     miro[0][0] = '0';  // depth 넣어줌
-    int find_direction_x[4] = {0,0,1,1};
-    int find_direction_y[4] = {0,1,0,1};
+    int find_direction_x[4] = {1,0,-1,0};
+    int find_direction_y[4] = {0,1,0,-1};
 
     while(!bfs.empty()){
         int pos_x = bfs.front()[0];  //x좌표
