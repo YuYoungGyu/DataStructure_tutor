@@ -1,6 +1,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <vector>
+#include <queue>
+#include <stack>
+#include <fstream>
 
 using namespace std;
 
@@ -27,7 +30,6 @@ class FileSystem{
         void cd(string name);
         void rmdir(string name);
         void print_error_message();
-
 };
 
 void FileSystem::print_current_path(){
@@ -85,7 +87,24 @@ void FileSystem::rmdir(string name){
             dir* tmp = current_dir->child_dir[idx];
             tmp->parent_dir = nullptr;
             current_dir->child_dir.erase(current_dir->child_dir.begin() + idx);
-            delete tmp;
+            stack<dir*> nodes;
+            queue<dir*> q;
+            q.push(tmp);
+            while(!q.empty()){
+                dir* t = q.front();
+                q.pop();
+                nodes.push(t);
+                for(dir* c : t->child_dir){
+                    q.push(c);
+                }
+            }
+            while(!nodes.empty()){
+                dir* t = nodes.top();
+                nodes.pop();
+                cout << t->name << '\n';
+                t = nullptr;
+                delete t;
+            }
             break;
         }
     }
@@ -118,6 +137,7 @@ int main(){
     FileSystem f;
     string command;
     vector<string> command_set;
+
     while(1){
         f.print_current_path();
         while(1){
