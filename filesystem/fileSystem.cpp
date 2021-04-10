@@ -29,6 +29,7 @@ class FileSystem{
         void ls();
         void cd(string name);
         void rmdir(string name);
+        void rmdir_recursive(string name, dir* tmp);
         void print_error_message();
 };
 
@@ -110,6 +111,28 @@ void FileSystem::rmdir(string name){
     }
 }
 
+void FileSystem::rmdir_recursive(string name, dir* tmp){
+    if(tmp != nullptr){
+        for(dir* c: tmp->child_dir){
+            c->parent_dir = nullptr;
+            rmdir_recursive(name,c);
+        }
+        tmp->child_dir.clear();
+        cout << tmp->name << endl;
+        delete tmp;
+        return;
+    }
+    for(int idx = 0; idx < current_dir->child_dir.size(); idx++){
+        if(current_dir->child_dir[idx]->name.compare(name) == 0){
+            tmp = current_dir->child_dir[idx];
+            tmp->parent_dir = nullptr;
+            current_dir->child_dir.erase(current_dir->child_dir.begin() + idx);
+            rmdir_recursive(name,tmp);
+            break;
+        }
+    }
+}
+
 vector<string> command_spliter(){
     vector<string> result;
     string sub_command;
@@ -149,6 +172,7 @@ int main(){
         else if(command_set[0].compare("mkdir") == 0) f.mkdir(command_set[1]);
         else if(command_set[0].compare("cd") == 0) f.cd(command_set[1]);
         else if(command_set[0].compare("rmdir") == 0) f.rmdir(command_set[1]);
+        else if(command_set[0].compare("rmdir_recursive") == 0) f.rmdir_recursive(command_set[1],nullptr);
         else if(command_set[0].compare("exit") == 0) break;
         command_set.clear();
     }
