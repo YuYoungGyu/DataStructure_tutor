@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <queue>
 #include <algorithm>
 #include <random>
 //#include <time.h>
@@ -16,6 +17,7 @@ class Maze{
         vector<pair<int,int>> exit_pos;
         vector<vector<int>> m_pool;
         vector<int> results;
+        vector<vector<pair<int,int>>> all_path;
     public:
         Maze(int n);
         ~Maze(){};
@@ -27,7 +29,8 @@ class Maze{
         void make_m_pool();
         void maze_initialize();
         void make_maze();
-        void trip_maze();
+        void b_trip_maze(int e_x, int e_y);
+        void d_trip_maze(int e_x, int e_y);
         void display_maze();
 };
 
@@ -143,12 +146,15 @@ void Maze::make_maze(){
             int x = maker.top().first;
             int y = maker.top().second;
             maker.pop();
+
+            if(!(four_check(x,y) && s_check(x,y)) && maze_array[x][y] != 'O'){ continue;}
+            
+            maze_array[x][y] = 'O';
             int r = rand()%24;
             for(int i : m_pool[r]){
                 int n_x = x + m_x[i];
                 int n_y = y + m_y[i];
-                if(b_check(n_x,n_y) && p_check(n_x,n_y) && four_check(n_x,n_y) && s_check(n_x,n_y)){
-                    maze_array[n_x][n_y] = 'O';
+                if(b_check(n_x,n_y) && p_check(n_x,n_y) && four_check(n_x,n_y) && s_check(n_x,n_y)){ 
                     maker.push(make_pair(n_x,n_y));
                 }
             }
@@ -164,8 +170,54 @@ void Maze::make_maze(){
     }while(run);
 
     display_maze();
+    d_trip_maze(e_x,e_y);
     maze_initialize();
     make_maze();
+}
+
+void Maze::b_trip_maze(int e_x, int e_y){
+    maze_array;
+    maze_masking;
+}
+
+
+
+void Maze::d_trip_maze(int e_x, int e_y){
+    vector<pair<int,int>> path;
+
+    int m_x[4] = {0,1,0,-1};
+    int m_y[4] = {1,0,-1,0};
+
+    stack<pair<int,int>> d_trip;
+    d_trip.push(make_pair(0,0));
+    maze_masking[0][0] = '1';
+    while(!d_trip.empty()){
+        int t_x = d_trip.top().first;
+        int t_y = d_trip.top().second;
+        d_trip.pop();
+        
+        path.push_back(make_pair(t_x,t_y));
+        if(t_x == e_x && t_y == e_y) break;
+
+        for(int i = 0; i < 4; i++){
+            int n_x = t_x + m_x[i];
+            int n_y = t_y + m_y[i];
+
+            if(b_check(n_x,n_y) && maze_array[n_x][n_y] == 'O' && maze_masking[n_x][n_y] != '1'){
+                d_trip.push(make_pair(n_x,n_y));
+                maze_masking[t_x][t_y] = '1';
+            }
+        }
+    }
+
+    for(pair<int,int> a: path){
+        cout << '(' << a.first << ',' << a.second << ')' << "->";
+    }
+    cout << endl;
+    int size = path.size();
+    cout << size <<"\n----------------\n";
+    results.push_back(size);
+    all_path.push_back(path);
 }
 
 void Maze::display_maze(){
@@ -175,7 +227,6 @@ void Maze::display_maze(){
         }
         cout << endl;
     }
-    cout << "----------------\n";
 }
 
 int main(){
