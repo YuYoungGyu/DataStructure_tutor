@@ -37,6 +37,7 @@ class Person{
         Person(){
             state = Suspected;
             suspected_person++;
+            check = time;
         }
         statement get_state(){
             return state;
@@ -54,7 +55,6 @@ class Person{
             this->near_node.push_back(p);
             p->near_node.push_back(this);
         }
-
         void infect(){
             state = Infected;
             suspected_person--;
@@ -70,6 +70,12 @@ class Person{
             int result = near_node.size();
             cout << result << endl;
             return result;
+        }
+        void time_increment(){
+            time++;
+        }
+        void set_check(){
+            check = time;
         }
 };
 
@@ -145,10 +151,17 @@ int main(){
     start->display_near_node();
 
     // 바이러스 숙주 한명 선택
-    
+    start->infect();
+    start->time_increment();
+    start->set_check();
 
-    while(Person().get_infected_person()){
+    vector<Person*> infected_vector;
+    infected_vector.push_back(start);
 
+    while(!infected_vector.empty()){
+        for(Person* infected_person: infected_vector){
+            
+        }
     }
 
     return 0;
